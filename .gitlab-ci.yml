@@ -101,6 +101,7 @@ sonarqube-check:
     paths:
       - "${BUILD_WRAPPER_OUT_DIR}"
   script:
+    - ls -la
     - ~/sonar-scanner/bin/sonar-scanner --define sonar.host.url="${SONAR_HOST_URL}" --define sonar.cfamily.build-wrapper-output="${BUILD_WRAPPER_OUT_DIR}"
   only:
     - merge_requests
