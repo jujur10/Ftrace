@@ -18,7 +18,7 @@ int main(int argc, char *argv[], char **env)
 {
     if (argc == 2 && 0 == strncmp(argv[1], "--help", 6))
         return print_help();
-    if (argc != 2)
+    if (argc < 2)
         return 84;
     strace_command(argv, env);
     return 0;
