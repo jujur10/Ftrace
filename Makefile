@@ -17,12 +17,21 @@ CFLAGS = -Ofast -march=native -flto=auto -Wall -Wextra -std=gnu2x -I./include
 
 CDEBUGFLAGS = -Og -g3 -std=gnu2x -I./include
 
+CMAKE_GEN_FLAGS :=
+CMAKE_BUILD_FLAGS :=
 
-all:
-	@gcc -o $(NAME) $(MAIN) $(SRCS) $(CFLAGS)
+BUILD_DIR := build
+DEBUG_DIR := debug
+
+all: build
+
+build:
+	@cmake -B $(BUILD_DIR) . $(CMAKE_GEN_FLAGS) -DCMAKE_BUILD_TYPE=Release
+	@cmake --build $(BUILD_DIR) --config Release $(CMAKE_BUILD_FLAGS)
 
 debug:
-	@gcc -o $(NAME) $(MAIN) $(SRCS) $(CDEBUGFLAGS)
+	@cmake -B $(DEBUG_DIR) . $(CMAKE_GEN_FLAGS) -DCMAKE_BUILD_TYPE=Debug
+	@cmake --build $(DEBUG_DIR) --config Debug $(CMAKE_BUILD_FLAGS)
 
 clean:
 	@rm -rf *.o .idea/
@@ -30,6 +39,7 @@ clean:
 	@find . -type f,d -name "vgcore*" -delete
 	@find . -type f,d -name "*.gcno" -delete
 	@find . -type f,d -name "*.gcda" -delete
+	@rm -rf $(BUILD_DIR) $(DEBUG_DIR)
 
 fclean: clean
 	@find . -name $(NAME) -delete

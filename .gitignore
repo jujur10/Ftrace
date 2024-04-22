@@ -60,4 +60,7 @@ dkms.conf
 /.vscode
 *.sublime-project
 *.sublime-workspace
-/EXECUTABLE_NAME
+/ftrace
+
+cmake-build-*
+build*
