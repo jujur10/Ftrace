@@ -93,7 +93,7 @@ void strace_command(char **args, char **env)
 
     if (tracee == 0) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execve(args[0], args, env);
+        execve(args[1], args, env);
         return;
     }
     trace_process(tracee);
