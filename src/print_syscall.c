@@ -32,8 +32,9 @@ void print_syscall(const struct user_regs_struct *regs)
     char buffer[20] = {};
     int32_t len;
 
+    write(1, "Syscall ", 8);
     write(1, current_syscall.name, strlen(current_syscall.name));
-    write(1, "(", 1);
+    write(1, " (", 2);
     for (uint8_t i = 0; i < 6 && current_syscall.args_value[i] != NONE; i++) {
         len = snprintf(buffer, 20, "0x%lx", get_register(regs, i));
         write(1, buffer, len);
