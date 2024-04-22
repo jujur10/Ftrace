@@ -30,6 +30,9 @@ target_link_options(build_configs INTERFACE
 
 add_executable(ftrace
     src/main.c
+    src/ftrace.c
+    src/print_syscall.c
+    src/print_utils.c
 )
 
 target_include_directories(ftrace PRIVATE
