@@ -4,11 +4,18 @@
 ** File description:
 ** Main file
 */
+#include <unistd.h>
+#include <string.h>
 
-#include <stdio.h>
+int print_help(void)
+{
+    write(1, "USAGE: ftrace <command>\n", 24);
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
-    printf("Hello World\n");
-    return 0;
+    if (argc == 2 && 0 == strncmp(argv[1], "--help", 6))
+        return print_help();
+    return 84;
 }
