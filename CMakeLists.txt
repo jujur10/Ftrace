@@ -33,6 +33,7 @@ add_executable(ftrace
     src/ftrace.c
     src/print_syscall.c
     src/print_utils.c
+    src/signal.c
 )
 
 target_include_directories(ftrace PRIVATE

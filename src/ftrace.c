@@ -52,12 +52,27 @@ static void trace_exit_call(pid_t pid, struct user_regs_struct *regs)
     }
 }
 
+static void handle_signal(int status)
+{
+    int sig;
+
+    if (WIFSTOPPED(status)) {
+        sig = WSTOPSIG(status);
+        if (sig != 5) {
+            write(1, "Received signal ", 16);
+            write_signal(sig);
+            write(1, "\n", 1);
+        }
+    }
+}
+
 static void trace_call(pid_t pid, struct user_regs_struct *regs, int *status)
 {
     unsigned long long syscall;
 
     ptrace(PTRACE_GETREGS, pid, NULL, regs);
     syscall = (*regs).orig_rax;
+    handle_signal(*status);
     if (syscall <= 331) {
         print_syscall(regs);
         check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
