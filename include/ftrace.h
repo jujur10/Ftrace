@@ -14,7 +14,7 @@
 #define CALL_NEAR_RELATIVE 0xe8
 
 // Strace
-void strace_command(char **args, char **env);
+void ftrace_command(char **args, char **env);
 
 // Get information about registers
 uint64_t get_register(struct user_regs_struct const *regs, uint8_t arg);

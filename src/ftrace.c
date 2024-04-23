@@ -92,7 +92,7 @@ static void trace_process(pid_t pid)
     check_err(ptrace(PTRACE_DETACH, pid, NULL, NULL), "ptrace: detach");
 }
 
-void strace_command(char **args, char **env)
+void ftrace_command(char **args, char **env)
 {
     pid_t tracee = fork();
 

@@ -20,6 +20,6 @@ int main(int argc, char *argv[], char **env)
         return print_help();
     if (argc < 2)
         return 84;
-    strace_command(argv, env);
+    ftrace_command(argv, env);
     return 0;
 }
