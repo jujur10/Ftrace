@@ -8,8 +8,10 @@
 #pragma once
 
 #include <stdint.h>
-#include <semaphore.h>
 #include <sys/user.h>
+
+#define CALL_INSTRUCTION_SIZE 5
+#define CALL_NEAR_RELATIVE 0xe8
 
 // Strace
 void strace_command(char **args, char **env);
@@ -26,3 +28,7 @@ void print_leaving_function(const char *function_name, int64_t len);
 
 // Signal handling
 void write_signal(int signal);
+
+// Call analysis
+void analyse_near_relative_function(unsigned char *instruction_bytes,
+    const struct user_regs_struct *regs);

@@ -13,16 +13,6 @@
 #include <stdint.h>
 #include "ftrace.h"
 
-static void print_exit(uint8_t exit_code)
-{
-    char number_as_str[4] = {};
-
-    snprintf(number_as_str, 4, "%hu", exit_code);
-    write(1, "+++ exited with ", 16);
-    write(1, number_as_str, 4);
-    write(1, " +++\n", 5);
-}
-
 static void check_err(int64_t ret, char const *msg)
 {
     if (ret == -1) {
@@ -31,24 +21,12 @@ static void check_err(int64_t ret, char const *msg)
     }
 }
 
-static void setup_tracing(pid_t pid, int *status)
-{
-    waitpid(pid, status, 0);
-    ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
-}
-
-void print_return(unsigned long long syscall,
-    struct user_regs_struct const *regs)
-{
-    print_ret(syscall, regs->rax);
-}
-
 static void trace_exit_call(pid_t pid, struct user_regs_struct *regs)
 {
     check_err(ptrace(PTRACE_GETREGS, pid, NULL, regs), "ptrace: getregs");
-    if ((*regs).orig_rax <= 331) {
+    if ((*regs).orig_rax <= 334) {
         print_syscall(regs);
-        print_return((*regs).orig_rax, regs);
+        print_ret((*regs).orig_rax, regs->rax);
     }
 }
 
@@ -66,23 +44,36 @@ static void handle_signal(int status)
     }
 }
 
-static void trace_call(pid_t pid, struct user_regs_struct *regs, int *status)
+static void trace_syscall(const pid_t pid,
+    struct user_regs_struct *regs,
+    int *status)
 {
-    unsigned long long syscall;
+    unsigned long long syscall = regs->orig_rax;
+
+    print_syscall(regs);
+    check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
+    waitpid(pid, status, 0);
+    check_err(ptrace(PTRACE_GETREGS, pid, NULL, regs), "ptrace: getregs");
+    print_ret(syscall, regs->rax);
+}
+
+static void trace_call(const pid_t pid,
+    struct user_regs_struct *regs,
+    int *status)
+{
+    long instruction;
+    unsigned char *instruction_bytes;
 
     ptrace(PTRACE_GETREGS, pid, NULL, regs);
-    syscall = (*regs).orig_rax;
+    instruction = ptrace(PTRACE_PEEKTEXT, pid, regs->rip, NULL);
+    instruction_bytes = (unsigned char *)&instruction;
     handle_signal(*status);
-    if (syscall <= 331) {
-        print_syscall(regs);
-        check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
-        waitpid(pid, status, 0);
-        check_err(ptrace(PTRACE_GETREGS, pid, NULL, regs), "ptrace: getregs");
-        print_return(syscall, regs);
-    } else {
-        check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
-        waitpid(pid, status, 0);
-    }
+    if (regs->orig_rax <= 334)
+        return trace_syscall(pid, regs, status);
+    if (instruction_bytes[0] == CALL_NEAR_RELATIVE)
+        analyse_near_relative_function(instruction_bytes, regs);
+    check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
+    waitpid(pid, status, 0);
 }
 
 static void trace_process(pid_t pid)
@@ -91,15 +82,14 @@ static void trace_process(pid_t pid)
     int status;
     uint8_t exit_status;
 
-    setup_tracing(pid, &status);
+    waitpid(pid, &status, 0);
+    ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
     while (status >> 8 != (SIGTRAP | (PTRACE_EVENT_EXIT << 8)))
         trace_call(pid, &regs, &status);
     trace_exit_call(pid, &regs);
     check_err(ptrace(PTRACE_GETEVENTMSG, pid, NULL, &exit_status),
     "ptrace: geteventmsg");
     check_err(ptrace(PTRACE_DETACH, pid, NULL, NULL), "ptrace: detach");
-    print_exit(exit_status);
-    _exit(exit_status);
 }
 
 void strace_command(char **args, char **env)
