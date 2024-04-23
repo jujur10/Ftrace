@@ -6,6 +6,28 @@
 */
 #include <sys/user.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <stdio.h>
+
+void print_entering_function(const char *function_name, int64_t len,
+    uint64_t ptr)
+{
+    char ptr_as_str[20] = {};
+    int64_t ptr_len = snprintf(ptr_as_str, 20, "0x%lx", ptr);
+
+    write(1, "Entering function ", 18);
+    write(1, function_name, len);
+    write(1, " at ", 4);
+    write(1, ptr_as_str, ptr_len);
+    write(1, "\n", 1);
+}
+
+void print_leaving_function(const char *function_name, int64_t len)
+{
+    write(1, "Leaving function ", 17);
+    write(1, function_name, len);
+    write(1, "\n", 1);
+}
 
 uint64_t get_register(struct user_regs_struct const *regs, uint8_t arg)
 {
