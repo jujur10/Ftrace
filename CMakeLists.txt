@@ -38,6 +38,7 @@ add_executable(ftrace
     src/print_utils.c
     src/signal.c
     src/call_near_relative.c
+    src/elf_utils.c
     src/call_near_absolute.c
 )
 
@@ -47,6 +48,7 @@ target_include_directories(ftrace PRIVATE
 
 target_link_libraries(ftrace PRIVATE
     build_configs
+    elf
 )
 
 set_target_properties(ftrace PROPERTIES

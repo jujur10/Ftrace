@@ -101,7 +101,7 @@ void ftrace_command(char **args, char **env)
     if (tracee == 0) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         execve(args[1], args, env);
-        return;
+        _exit(0);
     }
     trace_process(tracee);
 }

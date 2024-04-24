@@ -7,9 +7,18 @@
 
 #pragma once
 
+#include <libelf.h>
 #include <stdint.h>
 #include <sys/user.h>
 #include <sys/wait.h>
+
+typedef struct {
+    Elf64_Shdr *shdr;
+    Elf64_Sym *symtab;
+    uint64_t sym_count;
+} symbol_table_t;
+
+#define INIT_SYMBOL_TABLE {NULL, NULL, 0}
 
 #define CALL_INSTRUCTION_SIZE 5
 #define CALL_NEAR_RELATIVE 0xe8
@@ -37,6 +46,12 @@ void print_leaving_function(const char *function_name, int64_t len);
 
 // Signal handling
 void write_signal(int signal);
+
+// Elf utils functions
+uint8_t verify_elf(Elf *elf);
+uint8_t get_symbol_table(Elf *elf, symbol_table_t *symbol_table);
+char *get_symbol_from_address(Elf *elf, const symbol_table_t *symbol_table,
+    uint64_t address);
 
 // Call analysis
 uint64_t get_near_relative_function(unsigned char *instruction_bytes,
