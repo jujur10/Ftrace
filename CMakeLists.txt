@@ -40,6 +40,7 @@ add_executable(ftrace
     src/call_near_relative.c
     src/elf_utils.c
     src/call_near_absolute.c
+    src/map_utils.c
 )
 
 target_include_directories(ftrace PRIVATE

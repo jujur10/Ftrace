@@ -16,9 +16,7 @@ typedef struct {
     Elf64_Shdr *shdr;
     Elf64_Sym *symtab;
     uint64_t sym_count;
-} symbol_table_t;
-
-#define INIT_SYMBOL_TABLE {NULL, NULL, 0}
+} section_table_t;
 
 #define CALL_INSTRUCTION_SIZE 5
 #define CALL_NEAR_RELATIVE 0xe8
@@ -49,8 +47,9 @@ void write_signal(int signal);
 
 // Elf utils functions
 uint8_t verify_elf(Elf *elf);
-uint8_t get_symbol_table(Elf *elf, symbol_table_t *symbol_table);
-char *get_symbol_from_address(Elf *elf, const symbol_table_t *symbol_table,
+uint8_t get_section_table(Elf *elf, section_table_t *symbol_table,
+    uint32_t section_table);
+char *get_symbol_from_address(Elf *elf, const section_table_t *symbol_table,
     uint64_t address);
 
 // Call analysis
