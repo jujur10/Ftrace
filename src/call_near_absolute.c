@@ -60,11 +60,10 @@ static uint64_t get_base(const unsigned char *instruction_bytes,
         case 7:
             return regs->rdi;
     }
-    return 0;
 }
 
 static uint64_t get_sib(const unsigned char *instruction_bytes,
-                        const struct user_regs_struct *regs)
+    const struct user_regs_struct *regs)
 {
     const unsigned char sib = instruction_bytes[2];
     const uint8_t mod = GET_MOD(instruction_bytes[0]);
@@ -81,15 +80,16 @@ static uint64_t analyse_mod0(const unsigned char *ins_bytes,
 {
     write(1, "mod0\n", 5);
     switch (GET_RM(ins_bytes[1])) {
-        SCASE(0, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rax, NULL))
-        SCASE(1, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rcx, NULL))
-        SCASE(2, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rdx, NULL))
-        SCASE(3, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rbx, NULL))
-        SCASE(4, return ptrace(PTRACE_PEEKDATA, pid, (void*)get_sib(ins_bytes, regs), NULL))
-        SCASE(5, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rip +
+        SCASE(0, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rax, NULL))
+        SCASE(1, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rcx, NULL))
+        SCASE(2, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rdx, NULL))
+        SCASE(3, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rbx, NULL))
+        SCASE(4, return ptrace(PTRACE_PEEKDATA, pid, (void *)
+            get_sib(ins_bytes, regs), NULL))
+        SCASE(5, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rip +
             *(int32_t *)(ins_bytes + 2), NULL))
-        SCASE(6, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rsi, NULL))
-        SCASE(7, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rdi, NULL))
+        SCASE(6, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rsi, NULL))
+        SCASE(7, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rdi, NULL))
     }
     return 0;
 }
@@ -99,21 +99,21 @@ static uint64_t analyse_mod1(const unsigned char *ins_bytes,
 {
     write(1, "mod1\n", 5);
     switch (GET_RM(ins_bytes[1])) {
-        SCASE(0, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rax +
+        SCASE(0, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rax +
             *(int8_t *)(ins_bytes + 2), NULL))
-        SCASE(1, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rcx +
+        SCASE(1, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rcx +
             *(int8_t *)(ins_bytes + 2), NULL))
-        SCASE(2, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rdx +
+        SCASE(2, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rdx +
             *(int8_t *)(ins_bytes + 2), NULL))
-        SCASE(3, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rbx +
+        SCASE(3, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rbx +
             *(int8_t *)(ins_bytes + 2), NULL))
         SCASE(4, return ptrace(PTRACE_PEEKDATA, pid,
-            (void*)get_sib(ins_bytes, regs) + *(int8_t *)(ins_bytes + 3)))
-        SCASE(5, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rbp +
+            (void *)get_sib(ins_bytes, regs) + *(int8_t *)(ins_bytes + 3)))
+        SCASE(5, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rbp +
             *(int8_t *)(ins_bytes + 2), NULL))
-        SCASE(6, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rsi +
+        SCASE(6, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rsi +
             *(int8_t *)(ins_bytes + 2), NULL))
-        SCASE(7, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rdi +
+        SCASE(7, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rdi +
             *(int8_t *)(ins_bytes + 2), NULL))
     }
     return 0;
@@ -124,21 +124,21 @@ static uint64_t analyse_mod2(const unsigned char *ins_bytes,
 {
     write(1, "mod2\n", 5);
     switch (GET_RM(ins_bytes[1])) {
-        SCASE(0, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rax +
+        SCASE(0, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rax +
             *(int32_t *)(ins_bytes + 2), NULL))
-        SCASE(1, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rcx +
+        SCASE(1, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rcx +
             *(int32_t *)(ins_bytes + 2), NULL))
-        SCASE(2, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rdx +
+        SCASE(2, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rdx +
             *(int32_t *)(ins_bytes + 2), NULL))
-        SCASE(3, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rbx +
+        SCASE(3, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rbx +
             *(int32_t *)(ins_bytes + 2), NULL))
         SCASE(4, return ptrace(PTRACE_PEEKDATA, pid,
-            (void*)get_sib(ins_bytes, regs) + *(int32_t *)(ins_bytes + 3)))
-        SCASE(5, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rbp +
+            (void *)get_sib(ins_bytes, regs) + *(int32_t *)(ins_bytes + 3)))
+        SCASE(5, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rbp +
             *(int32_t *)(ins_bytes + 2), NULL))
-        SCASE(6, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rsi +
+        SCASE(6, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rsi +
             *(int32_t *)(ins_bytes + 2), NULL))
-        SCASE(7, return ptrace(PTRACE_PEEKDATA, pid, (void*)regs->rdi +
+        SCASE(7, return ptrace(PTRACE_PEEKDATA, pid, (void *)regs->rdi +
             *(int32_t *)(ins_bytes + 2), NULL))
     }
     return 0;
@@ -170,13 +170,13 @@ void analyse_near_absolute_function(const unsigned char *ins_bytes,
 
     switch (GET_MOD(ins_bytes[1])) {
         case 0:
-            t_adr = analyse_mod0(ins_bytes, regs, pid); BREAK
+            t_adr = analyse_mod0(ins_bytes, regs, pid) SEMICOLON break;
         case 1:
-            t_adr = analyse_mod1(ins_bytes, regs, pid); BREAK
+            t_adr = analyse_mod1(ins_bytes, regs, pid) SEMICOLON break;
         case 2:
-            t_adr = analyse_mod2(ins_bytes, regs, pid); BREAK
+            t_adr = analyse_mod2(ins_bytes, regs, pid) SEMICOLON break;
         case 3:
-            t_adr = analyse_mod3(ins_bytes, regs); BREAK
+            t_adr = analyse_mod3(ins_bytes, regs) SEMICOLON break;
     }
     len = snprintf(buffer, 64, "Function call abs at %#lx\n", t_adr);
     write(1, buffer, len);
