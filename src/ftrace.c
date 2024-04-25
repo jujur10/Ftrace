@@ -73,7 +73,7 @@ static void trace_call(const pid_t pid,
     if (instruction_bytes[0] == CALL_NEAR_RELATIVE)
         analyse_near_relative_function(instruction_bytes, regs);
     if (instruction_bytes[0] == 0xFF && GET_REG(instruction_bytes[1]) == 2)
-        analyse_near_absolute_function(instruction_bytes, regs);
+        analyse_near_absolute_function(instruction_bytes, regs, pid);
     check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
     waitpid(pid, status, 0);
 }

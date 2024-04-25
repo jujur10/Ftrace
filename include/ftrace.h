@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <sys/user.h>
+#include <sys/wait.h>
 
 #define CALL_INSTRUCTION_SIZE 5
 #define CALL_NEAR_RELATIVE 0xe8
@@ -41,4 +42,4 @@ void write_signal(int signal);
 void analyse_near_relative_function(unsigned char *instruction_bytes,
     const struct user_regs_struct *regs);
 void analyse_near_absolute_function(const unsigned char *ins_bytes,
-    const struct user_regs_struct *regs);
+    const struct user_regs_struct *regs, pid_t pid);

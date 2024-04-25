@@ -5,7 +5,7 @@
 ** e8 op code functions
 */
 
-#include <ftrace.h>
+#include "ftrace.h"
 #include <stdio.h>
 #include <unistd.h>
 
