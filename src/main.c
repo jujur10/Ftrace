@@ -12,8 +12,7 @@
 #include "ftrace.h"
 #include "map.h"
 
-map_t symbol_table_map = {};
-map_t dynamic_symbol_map = {};
+map_t *maps = NULL;
 
 static int print_help(void)
 {

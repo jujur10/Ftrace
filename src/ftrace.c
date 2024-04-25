@@ -84,30 +84,6 @@ static uint64_t close_and_return(FILE *fp, uint64_t base_address)
     return base_address;
 }
 
-static uint64_t get_virtual_address_start(pid_t pid)
-{
-    FILE *fp;
-    uint64_t base_address = 0;
-    char line[256];
-    char path[200] = {};
-    uint64_t start;
-    uint64_t end;
-    char perms[5];
-
-    snprintf(path, 200, "/proc/%i/maps", pid);
-    fp = fopen(path, "r");
-    if (NULL == fp)
-        return 0;
-    while (fgets(line, sizeof(line), fp)) {
-        if (sscanf(line, "%lx-%lx %4s", &start, &end, perms) == 3 &&
-        perms[2] == 'x') {
-            base_address = start;
-            break;
-        }
-    }
-    return close_and_return(fp, base_address);
-}
-
 static void trace_process(pid_t pid)
 {
     struct user_regs_struct regs;

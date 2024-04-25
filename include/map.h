@@ -15,8 +15,15 @@ typedef struct map_s {
     uint64_t len;
 } map_t;
 
-extern map_t symbol_table_map;
-extern map_t dynamic_symbol_map;
+typedef struct memory_map_s {
+    uint64_t start;
+    uint64_t end;
+    uint64_t offset;
+    char *filename;
+    map_t *map;
+} memory_map_t;
+
+extern memory_map_t *memory_maps;
 
 // Map utils functions
 void create_map_from_section_table(Elf *elf,
