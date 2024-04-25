@@ -20,7 +20,10 @@ target_compile_definitions(build_configs INTERFACE
     $<$<CONFIG:RELEASE>:NDEBUG>
     BRACKET_O={
     BRACKET_C=}
-    SEMICOLON=\;
+    "SEMICOLON=\;"
+    COLON=:
+    "EQUAL=\="
+    "BREAK=break\;"
 )
 
 target_link_options(build_configs INTERFACE
@@ -35,6 +38,7 @@ add_executable(ftrace
     src/print_utils.c
     src/signal.c
     src/call_near_relative.c
+    src/call_near_absolute.c
 )
 
 target_include_directories(ftrace PRIVATE
