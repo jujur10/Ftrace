@@ -39,7 +39,7 @@ void print_leaving_function(const char *function_name, int64_t len);
 void write_signal(int signal);
 
 // Call analysis
-void analyse_near_relative_function(unsigned char *instruction_bytes,
+uint64_t get_near_relative_function(unsigned char *instruction_bytes,
     const struct user_regs_struct *regs);
-void analyse_near_absolute_function(const unsigned char *ins_bytes,
+uint64_t get_near_absolute_function(const unsigned char *ins_bytes,
     const struct user_regs_struct *regs, pid_t pid);
