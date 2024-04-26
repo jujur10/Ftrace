@@ -10,9 +10,6 @@
 #include <fcntl.h>
 
 #include "ftrace.h"
-#include "map.h"
-
-map_t *maps = NULL;
 
 static int print_help(void)
 {
@@ -37,26 +34,6 @@ static uint8_t return_failure(int fd, Elf *elf)
     return 84;
 }
 
-static void free_and_close_everything(Elf *elf)
-{
-    if (elf != NULL)
-        elf_end(elf);
-    destroy_map(&symbol_table_map);
-    destroy_map(&dynamic_symbol_map);
-}
-
-static uint8_t create_maps(Elf *elf)
-{
-    section_table_t symbol_table = {NULL, NULL, 0};
-    section_table_t dynamic_symbol = {NULL, NULL, 0};
-
-    if (1 == get_section_tables(elf, &symbol_table, &dynamic_symbol))
-        return 1;
-    create_map_from_section_table(elf, &symbol_table, &symbol_table_map);
-    create_map_from_section_table(elf, &dynamic_symbol, &dynamic_symbol_map);
-    return 0;
-}
-
 int main(int argc, char *argv[], char **env)
 {
     int fd;
@@ -71,8 +48,8 @@ int main(int argc, char *argv[], char **env)
     elf = elf_begin(fd, ELF_C_READ, NULL);
     if (1 == verify_elf(elf))
         return return_failure(fd, elf);
-    create_maps(elf);
+    elf_end(elf);
+    close(fd);
     ftrace_command(argv, env);
-    free_and_close_everything(elf);
     return 0;
 }

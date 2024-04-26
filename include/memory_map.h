@@ -10,9 +10,6 @@
 #include <elf.h>
 #include <gelf.h>
 
-#include "ftrace.h"
-#include "map.h"
-
 typedef struct elf_file_s {
     int fd;
     Elf *elf;

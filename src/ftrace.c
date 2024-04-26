@@ -11,7 +11,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+
 #include "ftrace.h"
+#include "memory_map.h"
+
+memory_map_array_t *memory_map_array;
 
 static void check_err(int64_t ret, char const *msg)
 {
@@ -78,18 +82,14 @@ static void trace_call(const pid_t pid,
     waitpid(pid, status, 0);
 }
 
-static uint64_t close_and_return(FILE *fp, uint64_t base_address)
-{
-    fclose(fp);
-    return base_address;
-}
-
 static void trace_process(pid_t pid)
 {
     struct user_regs_struct regs;
     int status;
     uint8_t exit_status;
 
+    memory_map_array_t *sex = get_memory_maps(pid);
+    printf("premier : %s\n", sex->memory_maps[0].filename);
     waitpid(pid, &status, 0);
     ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
     while (status >> 8 != (SIGTRAP | (PTRACE_EVENT_EXIT << 8)))

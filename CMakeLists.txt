@@ -30,7 +30,6 @@ target_link_options(build_configs INTERFACE
     -flto=auto
 )
 
-
 add_executable(ftrace
     src/main.c
     src/ftrace.c
@@ -40,7 +39,6 @@ add_executable(ftrace
     src/call_near_relative.c
     src/elf_utils.c
     src/call_near_absolute.c
-    src/map_utils.c
     src/memory_map_utils.c
     src/find_library.c
     src/find_function_name.c

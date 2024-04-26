@@ -12,6 +12,8 @@
 #include <sys/user.h>
 #include <sys/wait.h>
 
+#include "memory_map.h"
+
 typedef struct {
     Elf64_Shdr *shdr;
     Elf64_Sym *symtab;
@@ -51,6 +53,7 @@ uint8_t get_section_table(Elf *elf, section_table_t *symbol_table,
     uint32_t section_table);
 char *get_symbol_from_address(Elf *elf, const section_table_t *symbol_table,
     uint64_t address);
+uint8_t load_elf_file(memory_map_t *memory_map);
 
 // Call analysis
 uint64_t get_near_relative_function(unsigned char *instruction_bytes,
