@@ -28,28 +28,6 @@ uint8_t verify_elf(Elf *elf)
     return 0;
 }
 
-uint8_t get_section_table(Elf *elf, section_table_t *symbol_table,
-    uint32_t section_table)
-{
-    Elf_Scn *scn = NULL;
-    Elf64_Shdr *shdr = NULL;
-    Elf_Data *section;
-
-    scn = elf_nextscn(elf, scn);
-    while (scn != NULL) {
-        shdr = elf64_getshdr(scn);
-        if (section_table == shdr->sh_type) {
-            section = elf_getdata(scn, NULL);
-            symbol_table->symtab = section->d_buf;
-            symbol_table->sym_count = shdr->sh_size / shdr->sh_entsize;
-            symbol_table->shdr = shdr;
-            return 0;
-        }
-        scn = elf_nextscn(elf, scn);
-    }
-    return 1;
-}
-
 char *get_symbol_from_address(Elf *elf, const section_table_t *symbol_table,
     uint64_t address)
 {
@@ -138,8 +116,7 @@ static uint8_t get_rela_plt(elf_file_t *elf_file)
     if (scn == NULL)
         return free_and_return(shdr, 0);
     elf_file->plt_shdr = shdr;
-    elf_file->plt_data = elf_getdata(scn, NULL);
-    return 0;
+    elf_file->plt_data = elf_getdata(scn, NULL) SEMICOLON return 0;
 }
 
 uint8_t load_elf_file(memory_map_t *memory_map)

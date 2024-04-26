@@ -60,7 +60,7 @@ static uint64_t count_lines(FILE *fp)
     while (fgets(line, sizeof(line), fp))
         if (0 == test_map_information(line))
             count++;
-    fseek(fp, 0, SEEK_SET);
+    rewind(fp);
     return count;
 }
 

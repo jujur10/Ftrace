@@ -17,16 +17,6 @@ static int print_help(void)
     return 0;
 }
 
-static uint8_t get_section_tables(Elf *elf, section_table_t *symbol_table,
-    section_table_t *dynamic_symbol)
-{
-    if (1 == get_section_table(elf, symbol_table, SHT_SYMTAB))
-        return 1;
-    if (1 == get_section_table(elf, dynamic_symbol, SHT_DYNSYM))
-        return 1;
-    return 0;
-}
-
 static uint8_t return_failure(int fd, Elf *elf)
 {
     elf_end(elf);
