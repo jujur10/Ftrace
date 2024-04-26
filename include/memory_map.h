@@ -39,5 +39,5 @@ extern memory_map_array_t *memory_map_array;
 // Memory map function
 memory_map_array_t *get_memory_maps(pid_t pid);
 
-memory_map_t *find_symbol_lib_by_address(memory_map_array_t *maps,
+memory_map_t *find_symbol_lib_by_address(const memory_map_array_t *maps,
     unsigned long addr);

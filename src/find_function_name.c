@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <bits/ptrace-shared.h>
+#include <sys/ptrace.h>
 #include <linux/ptrace.h>
 
 #include "memory_map.h"
