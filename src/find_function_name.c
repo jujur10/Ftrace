@@ -92,7 +92,7 @@ static char *find_function_name(const memory_map_t *lib,
     return NULL;
 }
 
-void create_function_name(memory_map_array_t *maps,
+void create_function_name(const memory_map_array_t *maps,
     const pid_t pid,
     const unsigned long call_address,
     const char *tracee_bin_name)

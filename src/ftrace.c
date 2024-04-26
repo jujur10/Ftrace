@@ -63,10 +63,12 @@ static void trace_syscall(const pid_t pid,
 
 static void trace_call(const pid_t pid,
     struct user_regs_struct *regs,
-    int *status)
+    int *status,
+    char *tracee_name)
 {
     long instruction;
     unsigned char *instruction_bytes;
+    uint64_t call_addr;
 
     ptrace(PTRACE_GETREGS, pid, NULL, regs);
     instruction = ptrace(PTRACE_PEEKTEXT, pid, regs->rip, NULL);
@@ -74,15 +76,19 @@ static void trace_call(const pid_t pid,
     handle_signal(*status);
     if (regs->orig_rax <= 334)
         return trace_syscall(pid, regs, status);
-    if (instruction_bytes[0] == CALL_NEAR_RELATIVE)
-        get_near_relative_function(instruction_bytes, regs);
-    if (instruction_bytes[0] == 0xFF && GET_REG(instruction_bytes[1]) == 2)
-        get_near_absolute_function(instruction_bytes, regs, pid);
+    if (instruction_bytes[0] == CALL_NEAR_RELATIVE) {
+        call_addr = get_near_relative_function(instruction_bytes, regs);
+        create_function_name(memory_map_array, pid, call_addr, tracee_name);
+    }
+    if (instruction_bytes[0] == 0xFF && GET_REG(instruction_bytes[1]) == 2) {
+        call_addr = get_near_absolute_function(instruction_bytes, regs, pid);
+        create_function_name(memory_map_array, pid, call_addr, tracee_name);
+    }
     check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
     waitpid(pid, status, 0);
 }
 
-static void trace_process(pid_t pid)
+static void trace_process(pid_t pid, char *tracee_name)
 {
     struct user_regs_struct regs;
     int status;
@@ -92,7 +98,7 @@ static void trace_process(pid_t pid)
     memory_map_array = get_memory_maps(pid);
     ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
     while (status >> 8 != (SIGTRAP | (PTRACE_EVENT_EXIT << 8)))
-        trace_call(pid, &regs, &status);
+        trace_call(pid, &regs, &status, tracee_name);
     trace_exit_call(pid, &regs);
     check_err(ptrace(PTRACE_GETEVENTMSG, pid, NULL, &exit_status),
     "ptrace: geteventmsg");
@@ -108,6 +114,6 @@ void ftrace_command(char **args, char **env)
         execve(args[1], args, env);
         _exit(0);
     }
-    trace_process(tracee);
+    trace_process(tracee, args[1]);
     destroy_memory_maps(memory_map_array);
 }
