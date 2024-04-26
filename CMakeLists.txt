@@ -9,7 +9,6 @@ add_library(build_configs INTERFACE)
 
 target_compile_options(build_configs INTERFACE
     $<$<CONFIG:DEBUG>:-ggdb3>
-    $<$<CONFIG:DEBUG>:-Og>
     $<$<CONFIG:RELEASE>:-Ofast>
     -march=native
     -flto=auto
