@@ -9,8 +9,10 @@
 #include <unistd.h>
 #include <stdio.h>
 
-void print_entering_function(const char *function_name, int64_t len,
-    uint64_t ptr)
+#include "ftrace.h"
+
+void print_entering_function(const char *function_name, const int64_t len,
+    const uint64_t ptr)
 {
     char ptr_as_str[20] = {};
     int64_t ptr_len = snprintf(ptr_as_str, 20, "0x%lx", ptr);
