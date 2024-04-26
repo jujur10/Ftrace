@@ -42,6 +42,8 @@ add_executable(ftrace
     src/call_near_absolute.c
     src/map_utils.c
     src/memory_map_utils.c
+    src/find_library.c
+    src/find_function_name.c
 )
 
 target_include_directories(ftrace PRIVATE
