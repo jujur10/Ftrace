@@ -94,6 +94,13 @@ static void load_elf(memory_map_t *memory_map)
         memset(&memory_map->elf_file, 0, sizeof(elf_file_t));
 }
 
+memory_map_array_t *refresh_memory_maps(pid_t pid,
+    memory_map_array_t *memory_maps)
+{
+    destroy_memory_maps(memory_maps);
+    return get_memory_maps(pid);
+}
+
 memory_map_array_t *get_memory_maps(pid_t pid)
 {
     FILE *fp = open_maps_file(pid);
