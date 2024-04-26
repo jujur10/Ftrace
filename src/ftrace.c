@@ -13,6 +13,9 @@
 #include <stdint.h>
 
 #include "ftrace.h"
+
+#include <string.h>
+
 #include "memory_map.h"
 
 memory_map_array_t *memory_map_array;
@@ -61,14 +64,39 @@ static void trace_syscall(const pid_t pid,
     print_ret(syscall, regs->rax);
 }
 
+static void trace_function_call_ret(const pid_t pid,
+    const struct user_regs_struct *regs,
+    const char *tracee_name,
+    unsigned char *instruction_bytes)
+{
+    uint64_t call_addr;
+
+    if (instruction_bytes[0] == CALL_NEAR_RELATIVE) {
+        call_addr = get_near_relative_function(instruction_bytes, regs);
+        create_function_name(memory_map_array, pid, call_addr, tracee_name);
+        return;
+    }
+    if (instruction_bytes[0] == 0xFF && GET_REG(instruction_bytes[1]) == 2) {
+        call_addr = get_near_absolute_function(instruction_bytes, regs, pid);
+        create_function_name(memory_map_array, pid, call_addr, tracee_name);
+        return;
+    }
+    if (instruction_bytes[0] == 0xC2 || instruction_bytes[0] == 0xC3 ||
+        instruction_bytes[0] == 0xCA || instruction_bytes[0] == 0xCB) {
+        print_leaving_function(fct_stack.fct_stack[fct_stack.len - 1],
+            strlen(fct_stack.fct_stack[fct_stack.len - 1]));
+        memset(fct_stack.fct_stack[fct_stack.len], 0, 256);
+        fct_stack.len--;
+    }
+}
+
 static void trace_call(const pid_t pid,
     struct user_regs_struct *regs,
     int *status,
-    char *tracee_name)
+    const char *tracee_name)
 {
     long instruction;
     unsigned char *instruction_bytes;
-    uint64_t call_addr;
 
     ptrace(PTRACE_GETREGS, pid, NULL, regs);
     instruction = ptrace(PTRACE_PEEKTEXT, pid, regs->rip, NULL);
@@ -76,19 +104,12 @@ static void trace_call(const pid_t pid,
     handle_signal(*status);
     if (regs->orig_rax <= 334)
         return trace_syscall(pid, regs, status);
-    if (instruction_bytes[0] == CALL_NEAR_RELATIVE) {
-        call_addr = get_near_relative_function(instruction_bytes, regs);
-        create_function_name(memory_map_array, pid, call_addr, tracee_name);
-    }
-    if (instruction_bytes[0] == 0xFF && GET_REG(instruction_bytes[1]) == 2) {
-        call_addr = get_near_absolute_function(instruction_bytes, regs, pid);
-        create_function_name(memory_map_array, pid, call_addr, tracee_name);
-    }
+    trace_function_call_ret(pid, regs, tracee_name, instruction_bytes);
     check_err(ptrace(PTRACE_SINGLESTEP, pid, 0, 0), "ptrace: singlestep");
     waitpid(pid, status, 0);
 }
 
-static void trace_process(pid_t pid, char *tracee_name)
+static void trace_process(const pid_t pid, const char *tracee_name)
 {
     struct user_regs_struct regs;
     int status;
