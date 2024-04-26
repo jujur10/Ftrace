@@ -73,12 +73,12 @@ static void trace_function_call_ret(const pid_t pid,
 
     if (instruction_bytes[0] == CALL_NEAR_RELATIVE) {
         call_addr = get_near_relative_function(instruction_bytes, regs);
-        create_function_name(memory_map_array, pid, call_addr, tracee_name);
+        create_function_name(&memory_map_array, pid, call_addr, tracee_name);
         return;
     }
     if (instruction_bytes[0] == 0xFF && GET_REG(instruction_bytes[1]) == 2) {
         call_addr = get_near_absolute_function(instruction_bytes, regs, pid);
-        create_function_name(memory_map_array, pid, call_addr, tracee_name);
+        create_function_name(&memory_map_array, pid, call_addr, tracee_name);
         return;
     }
     if (instruction_bytes[0] == 0xC2 || instruction_bytes[0] == 0xC3 ||

@@ -65,7 +65,7 @@ uint64_t get_near_relative_function(unsigned char *instruction_bytes,
     const struct user_regs_struct *regs);
 uint64_t get_near_absolute_function(const unsigned char *ins_bytes,
     const struct user_regs_struct *regs, pid_t pid);
-void create_function_name(const memory_map_array_t *maps,
-    pid_t pid,
-    unsigned long call_address,
+void create_function_name(memory_map_array_t **maps,
+    const pid_t pid,
+    const unsigned long call_address,
     const char *tracee_bin_name);

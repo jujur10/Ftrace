@@ -93,15 +93,23 @@ static char *find_function_name(const memory_map_t *lib,
     return NULL;
 }
 
-void create_function_name(const memory_map_array_t *maps,
+static memory_map_t *case_where_lib_null(memory_map_array_t **maps,
+    const pid_t pid, const unsigned long call_address)
+{
+    *maps = refresh_memory_maps(pid, *maps);
+    return find_symbol_lib_by_address(*maps, call_address);
+}
+
+void create_function_name(memory_map_array_t **maps,
     const pid_t pid,
     const unsigned long call_address,
     const char *tracee_bin_name)
 {
-    const memory_map_t *lib = find_symbol_lib_by_address(maps, call_address);
+    memory_map_t *lib = find_symbol_lib_by_address(*maps, call_address);
     char print[256] = {0};
     char *fct_name;
 
+    lib = (lib == NULL) ? case_where_lib_null(maps, pid, call_address) : lib;
     if (lib == NULL) {
         snprintf(print, 256, "func_%#lx@%s", call_address, tracee_bin_name);
     } else {

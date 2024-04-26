@@ -138,6 +138,8 @@ void destroy_memory_maps(memory_map_array_t *memory_maps)
             free(memory_maps->memory_maps[i].elf_file.dyn_shdr);
         if (memory_maps->memory_maps[i].elf_file.plt_shdr != NULL)
             free(memory_maps->memory_maps[i].elf_file.plt_shdr);
+        if (memory_maps->memory_maps[i].elf_file.fd != 0)
+            close(memory_maps->memory_maps[i].elf_file.fd);
     }
     free(memory_maps->memory_maps);
     free(memory_maps);
