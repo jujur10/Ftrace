@@ -90,6 +90,7 @@ static void trace_process(pid_t pid)
 
     memory_map_array_t *sex = get_memory_maps(pid);
     printf("premier : %s\n", sex->memory_maps[0].filename);
+    destroy_memory_maps(sex);
     waitpid(pid, &status, 0);
     ptrace(PTRACE_SETOPTIONS, pid, NULL, PTRACE_O_TRACEEXIT);
     while (status >> 8 != (SIGTRAP | (PTRACE_EVENT_EXIT << 8)))
