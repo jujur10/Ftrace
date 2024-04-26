@@ -13,6 +13,7 @@
 #include <linux/ptrace.h>
 
 #include "memory_map.h"
+#include "ftrace.h"
 
 
 static char *find_local_symbol(const elf_file_t lib_content,
@@ -100,20 +101,17 @@ void create_function_name(const memory_map_array_t *maps,
     const memory_map_t *lib = find_symbol_lib_by_address(maps, call_address);
     char print[256] = {0};
     char *fct_name;
-    size_t len;
 
     if (lib == NULL) {
-        len = snprintf(print, 256, "Entering function func_%#lx@%s at %#lx\n",
-            call_address, tracee_bin_name, call_address);
+        snprintf(print, 256, "func_%#lx@%s", call_address, tracee_bin_name);
     } else {
         fct_name = find_function_name(lib, pid, call_address);
         if (fct_name == NULL)
-            len = snprintf(print, 256,
-                "Entering function func_%#lx@%s at %#lx\n",
-                call_address, lib->filename, call_address);
+            snprintf(print, 256, "func_%#lx@%s", call_address, lib->filename);
         else
-            len = snprintf(print, 256, "Entering function %s at %#lx\n",
-                fct_name, call_address);
+            snprintf(print, 256, "%s", fct_name);
     }
-    write(1, print, len);
+    print_entering_function(print, strlen(print), call_address);
+    strcpy(fct_stack.fct_stack[fct_stack.len], print);
+    fct_stack.len++;
 }
