@@ -25,6 +25,7 @@ typedef struct memory_map_s {
     uint64_t start;
     uint64_t end;
     uint32_t offset;
+    uint32_t inode_id;
     char *filename;
     elf_file_t elf_file;
 } memory_map_t;

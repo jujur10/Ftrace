@@ -37,12 +37,11 @@ static uint8_t get_map_information(const char *line, memory_map_t *memory_map)
     char perms[5];
     uint32_t major;
     uint32_t minor;
-    uint32_t inode_id;
     uint64_t filename_len;
 
     if (sscanf(line, "%lx-%lx %4s %x %x:%x %u %[^\n]", &memory_map->start,
-    &memory_map->end, perms, &memory_map->offset, &major, &minor, &inode_id,
-    filename) == 8 && inode_id != 0) {
+    &memory_map->end, perms, &memory_map->offset, &major, &minor,
+    &memory_map->inode_id, filename) == 8 && memory_map->inode_id != 0) {
         filename_len = strlen(filename);
         memory_map->filename = malloc(sizeof(char) * (filename_len + 1));
         memcpy(memory_map->filename, filename, filename_len);
