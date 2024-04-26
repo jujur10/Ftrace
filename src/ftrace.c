@@ -44,9 +44,9 @@ static void handle_signal(int status)
     if (WIFSTOPPED(status)) {
         sig = WSTOPSIG(status);
         if (sig != 5) {
-            write(2, "Received signal ", 16);
+            write(1, "Received signal ", 16);
             write_signal(sig);
-            write(2, "\n", 1);
+            write(1, "\n", 1);
         }
     }
 }
