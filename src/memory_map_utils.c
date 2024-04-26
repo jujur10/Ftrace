@@ -23,7 +23,7 @@ static uint8_t test_map_information(const char *line)
     uint32_t minor;
     uint32_t inode_id;
 
-    if (sscanf(line, "%lx-%lx %4s %x %x:%x %u %[^\\n]", &start,
+    if (sscanf(line, "%lx-%lx %4s %x %x:%x %u %[^\n]", &start,
     &end, perms, &offset, &major, &minor, &inode_id,
     filename) == 8 && inode_id != 0) {
         return 0;
@@ -117,4 +117,22 @@ memory_map_array_t *get_memory_maps(pid_t pid)
     }
     fclose(fp);
     return maps;
+}
+
+void destroy_memory_maps(memory_map_array_t *memory_maps)
+{
+    for (uint64_t i = 0; i < memory_maps->len; i++) {
+        if (NULL != memory_maps->memory_maps[i].filename)
+            free(memory_maps->memory_maps[i].filename);
+        if (memory_maps->memory_maps[i].elf_file.elf != NULL)
+            elf_end(memory_maps->memory_maps[i].elf_file.elf);
+        if (memory_maps->memory_maps[i].elf_file.sym_shdr != NULL)
+            free(memory_maps->memory_maps[i].elf_file.sym_shdr);
+        if (memory_maps->memory_maps[i].elf_file.dyn_shdr != NULL)
+            free(memory_maps->memory_maps[i].elf_file.dyn_shdr);
+        if (memory_maps->memory_maps[i].elf_file.plt_shdr != NULL)
+            free(memory_maps->memory_maps[i].elf_file.plt_shdr);
+    }
+    free(memory_maps->memory_maps);
+    free(memory_maps);
 }
