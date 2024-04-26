@@ -20,6 +20,13 @@ typedef struct {
     uint64_t sym_count;
 } section_table_t;
 
+typedef struct {
+    char fct_stack[4096][256];
+    uint8_t len;
+} function_stack_t;
+
+extern function_stack_t fct_stack;
+
 #define CALL_INSTRUCTION_SIZE 5
 #define CALL_NEAR_RELATIVE 0xe8
 #define GET_MOD(modrm) (((modrm) >> 6) & 0x03)

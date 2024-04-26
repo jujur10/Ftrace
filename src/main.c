@@ -11,6 +11,8 @@
 
 #include "ftrace.h"
 
+function_stack_t fct_stack;
+
 static int print_help(void)
 {
     write(1, "USAGE: ftrace <command>\n", 24);
@@ -40,6 +42,7 @@ int main(int argc, char *argv[], char **env)
         return return_failure(fd, elf);
     elf_end(elf);
     close(fd);
+    memset(&fct_stack, 0, sizeof(function_stack_t));
     ftrace_command(argv, env);
     return 0;
 }
