@@ -130,13 +130,12 @@ uint8_t load_elf_file(memory_map_t *memory_map)
         return 1;
     memory_map->elf_file.fd = fd;
     memory_map->elf_file.elf = elf_begin(fd, ELF_C_READ, NULL);
-    if (NULL == memory_map->elf_file.elf) {
-        close(fd);
-        return 1;
-    }
+    if (NULL == memory_map->elf_file.elf)
+        return (uint8_t)close(fd) * 0 + 1;
     if (get_symbol_table(&memory_map->elf_file) == 1
     || get_rela_plt(&memory_map->elf_file) == 1
     || get_dyn_sym(&memory_map->elf_file) == 1) {
+        elf_end(memory_map->elf_file.elf);
         close(fd);
         return 1;
     }
