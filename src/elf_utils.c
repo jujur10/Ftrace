@@ -119,6 +119,14 @@ static uint8_t get_rela_plt(elf_file_t *elf_file)
     elf_file->plt_data = elf_getdata(scn, NULL) SEMICOLON return 0;
 }
 
+static void ckeck_is_pie(memory_map_t *memory_map)
+{
+    GElf_Ehdr elf_header;
+
+    gelf_getehdr(memory_map->elf_file.elf, &elf_header);
+    memory_map->is_pie = (ET_DYN == elf_header.e_type) ? 1 : 0;
+}
+
 uint8_t load_elf_file(memory_map_t *memory_map)
 {
     int fd;
@@ -136,8 +144,8 @@ uint8_t load_elf_file(memory_map_t *memory_map)
     || get_rela_plt(&memory_map->elf_file) == 1
     || get_dyn_sym(&memory_map->elf_file) == 1) {
         elf_end(memory_map->elf_file.elf);
-        close(fd);
-        return 1;
+        return (uint8_t)close(fd) * 0 + 1;
     }
+    ckeck_is_pie(memory_map);
     return 0;
 }

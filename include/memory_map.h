@@ -28,6 +28,7 @@ typedef struct memory_map_s {
     uint32_t inode_id;
     char *filename;
     elf_file_t elf_file;
+    uint8_t is_pie;
 } memory_map_t;
 
 typedef struct memory_map_array_s {
