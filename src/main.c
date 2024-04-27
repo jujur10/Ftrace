@@ -37,6 +37,8 @@ int main(int argc, char *argv[], char **env)
     if (argc < 2)
         return 84;
     fd = open(argv[1], O_RDONLY);
+    if (-1 == fd)
+        return 84;
     elf = elf_begin(fd, ELF_C_READ, NULL);
     if (1 == verify_elf(elf))
         return return_failure(fd, elf);

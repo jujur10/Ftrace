@@ -87,7 +87,8 @@ static char *find_function_name(const memory_map_t *lib,
     f_name = find_dynamic_symbol(lib_content, dynamic_offset);
     if (f_name)
         return f_name;
-    f_name = find_local_symbol(lib_content, call_address - lib->start);
+    f_name = find_local_symbol(lib_content,
+        call_address - (lib->is_pie ? lib->start : 0));
     if (f_name)
         return f_name;
     return NULL;
