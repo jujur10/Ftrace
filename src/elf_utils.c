@@ -19,7 +19,7 @@ uint8_t verify_elf(Elf *elf)
     const char *ehdr_ident = NULL;
 
     ehdr_ident = elf_getident(elf, NULL);
-    if (!(ehdr_ident[0] == '\x7f' &&
+    if (NULL == ehdr_ident || !(ehdr_ident[0] == '\x7f' &&
     ehdr_ident[1] == '\x45' &&
     ehdr_ident[2] == '\x4C' &&
     ehdr_ident[3] == '\x46')) {
