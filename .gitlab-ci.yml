@@ -93,27 +93,6 @@ run_tests:
   tags:
     - tests
 
-sonarqube-check:
-  stage: test
-  cache:
-    policy: pull
-    key: "${CI_COMMIT_SHORT_SHA}"
-    paths:
-      - "${BUILD_WRAPPER_OUT_DIR}"
-  script:
-    - ~/sonar-scanner/bin/sonar-scanner --define sonar.host.url="${SONAR_HOST_URL}" --define sonar.cfamily.build-wrapper-output="${BUILD_WRAPPER_OUT_DIR}"
-  only:
-    - merge_requests
-    - master
-    - main
-    - develop
-    - dev
-  needs:
-    - build_sonarqube_wrapper
-  tags:
-    - ubuntu
-    - SAST
-
 sonarqube-vulnerability-report:
   stage: test
   script:
@@ -129,8 +108,6 @@ sonarqube-vulnerability-report:
     expire_in: 1 day
     reports:
       sast: gl-sast-sonar-report.json
-  dependencies:
-    - sonarqube-check
   tags:
     - ubuntu
     - SAST
